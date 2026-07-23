@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: docintel
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+      - qdrant
+    volumes:
+      - ./backend:/app
+
+  worker:
+    build:
+      context: ./worker
+    depends_on:
+      - redis
+    volumes:
+      - ./worker:/app
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:
+  qdrant_data:
