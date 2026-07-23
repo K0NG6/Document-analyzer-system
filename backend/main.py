@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from celery import Celery
 import os
 
-from core.database import SessionLocal, init_db, Document
+from core.database import SessionLocal, Document
 from core.storage import LocalStorage
 
 celery_app = Celery('tasks', broker='redis://redis:6379/0')
@@ -18,7 +18,7 @@ storage = LocalStorage()
 
 @app.on_event("startup")
 def on_startup():
-    init_db()
+    pass
 
 def get_db():
     db = SessionLocal()

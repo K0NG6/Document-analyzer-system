@@ -13,13 +13,9 @@ Base = declarative_base()
 
 class Document(Base):
     __tablename__ = "documents"
-    
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String, index=True)
     file_path = Column(String)
     status = Column(String, default="uploaded")
     content_json = Column(JSON, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
-
-def init_db():
-    Base.metadata.create_all(bind=engine)
